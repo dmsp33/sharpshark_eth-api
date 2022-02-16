@@ -1,0 +1,174 @@
+Transform: AWS::Serverless-2016-10-31
+
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: "SharpShark - Blockchain App Layer for ETH"
+
+Parameters:
+  NetworkName:
+    Type: String
+    AllowedValues: [testnet, mainnet]
+
+Mappings:
+  ETH:
+    testnet:
+      InfuraProjectId: "xxx"
+      Web3Provider: "wss://rinkeby.infura.io/ws/v3/xxx"
+      ExotTokenAddress: "xxx"
+      OperatorAddress: "xxx"
+      OperatorAddressPvKey: "xx"
+      GasPrice: "xxx"
+      ExplorerLinkPrefix: "https://rinkeby.etherscan.io/tx/"
+    mainnet:
+      InfuraProjectId: "xxx"
+      Web3Provider: "wss://mainnet.infura.io/ws/v3/xxx"
+      ExotTokenAddress: "xxx"
+      OperatorAddress: "xxx"
+      OperatorAddressPvKey: "xx"
+      GasPrice: "xxx"
+      ExplorerLinkPrefix: "https://etherscan.io/tx/"
+  BINSC:
+    testnet:
+      InfuraProjectId: "xxx"
+      Web3Provider: "wss://rinkeby.infura.io/ws/v3/xxx"
+      ExotTokenAddress: "xxx"
+      OperatorAddress: "xxx"
+      OperatorAddressPvKey: "xx"
+      GasPrice: "xxx"
+      ExplorerLinkPrefix: "https://testnet.bscscan.com/tx/"
+    mainnet:
+      InfuraProjectId: "xxx"
+      Web3Provider: "wss://mainnet.infura.io/ws/v3/xxx"
+      ExotTokenAddress: "xxx"
+      OperatorAddress: "xxx"
+      OperatorAddressPvKey: "xx"
+      GasPrice: "xxx"
+      ExplorerLinkPrefix: "https://testnet.bscscan.com/tx/"
+  POLY:
+    testnet:
+      InfuraProjectId: "xxx"
+      Web3Provider: "https://polygon-mumbai.infura.io/v3/xxx"
+      ExotTokenAddress: "xxx"
+      OperatorAddress: "xxx"
+      OperatorAddressPvKey: "xx"
+      GasPrice: "xxx"
+      ExplorerLinkPrefix: "https://mumbai.polygonscan.com/tx/"
+    mainnet:
+      InfuraProjectId: "xxx"
+      Web3Provider: "https://polygon-mumbai.infura.io/v3/xxx"
+      ExotTokenAddress: "xxx"
+      OperatorAddress: "xxx"
+      OperatorAddressPvKey: "xx"
+      GasPrice: "xxx"
+      ExplorerLinkPrefix: "https://mumbai.polygonscan.com/tx/"
+
+Globals:
+  Function:
+    Runtime: python3.8
+    MemorySize: 128
+    Timeout: 100
+    AutoPublishAlias: live
+    DeploymentPreference:
+      Type: AllAtOnce
+    
+
+Resources:
+  SharpETHApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: !Ref NetworkName
+  CreateNFTFunctionETH:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "${NetworkName}-ETH-Create-ERC721-NFT-Function"
+      CodeUri: api/
+      Handler: service.lambda_handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Environment:
+        Variables:
+          WEB3_INFURA_PROJECT_ID: !FindInMap [ ETH, !Ref NetworkName, InfuraProjectId]
+          WEB3_PROVIDER: !FindInMap [ ETH, !Ref NetworkName, Web3Provider]
+          ADDRESS_EXOTOKEN: !FindInMap [ ETH, !Ref NetworkName, ExotTokenAddress]
+          ADDRESS_OPERATOR: !FindInMap [ ETH, !Ref NetworkName, OperatorAddress]
+          ADDRESS_OPERATOR_PRIVKEY: !FindInMap [ ETH, !Ref NetworkName, OperatorAddressPvKey]
+          GAS_PRICE: !FindInMap [ ETH, !Ref NetworkName, GasPrice]
+          TX_LINK_PREFIX: !FindInMap [ ETH, !Ref NetworkName, ExplorerLinkPrefix]
+      Events:
+        CreateTokenAtEthereum:
+          Type: Api
+          Properties:
+            Path: /eth/nft/ipfs/{hashipfs}
+            Method: POST
+            RestApiId:
+              Ref: SharpETHApi
+  CreateNFTFunctionPOLY:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "${NetworkName}-POLY-Create-ERC721-NFT-Function"
+      CodeUri: api/
+      Handler: service.lambda_handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Environment:
+        Variables:
+          WEB3_INFURA_PROJECT_ID: !FindInMap [ POLY, !Ref NetworkName, InfuraProjectId]
+          WEB3_PROVIDER: !FindInMap [ POLY, !Ref NetworkName, Web3Provider]
+          ADDRESS_EXOTOKEN: !FindInMap [ POLY, !Ref NetworkName, ExotTokenAddress]
+          ADDRESS_OPERATOR: !FindInMap [ POLY, !Ref NetworkName, OperatorAddress]
+          ADDRESS_OPERATOR_PRIVKEY: !FindInMap [ POLY, !Ref NetworkName, OperatorAddressPvKey]
+          GAS_PRICE: !FindInMap [ POLY, !Ref NetworkName, GasPrice]
+          TX_LINK_PREFIX: !FindInMap [ POLY, !Ref NetworkName, ExplorerLinkPrefix]
+      Events:
+        CreateTokenAtEthereum:
+          Type: Api
+          Properties:
+            Path: /poly/nft/ipfs/{hashipfs}
+            Method: POST
+            RestApiId:
+              Ref: SharpETHApi
+  CreateNFTFunctionBINSC:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "${NetworkName}-BINSC-Create-ERC721-NFT-Function"
+      CodeUri: api/
+      Handler: service.lambda_handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Environment:
+        Variables:
+          WEB3_INFURA_PROJECT_ID: !FindInMap [ BINSC, !Ref NetworkName, InfuraProjectId]
+          WEB3_PROVIDER: !FindInMap [ BINSC, !Ref NetworkName, Web3Provider]
+          ADDRESS_EXOTOKEN: !FindInMap [ BINSC, !Ref NetworkName, ExotTokenAddress]
+          ADDRESS_OPERATOR: !FindInMap [ BINSC, !Ref NetworkName, OperatorAddress]
+          ADDRESS_OPERATOR_PRIVKEY: !FindInMap [ BINSC, !Ref NetworkName, OperatorAddressPvKey]
+          GAS_PRICE: !FindInMap [ BINSC, !Ref NetworkName, GasPrice]
+          TX_LINK_PREFIX: !FindInMap [ BINSC, !Ref NetworkName, ExplorerLinkPrefix]
+      Events:
+        CreateTokenAtEthereum:
+          Type: Api
+          Properties:
+            Path: /binsc/nft/ipfs/{hashipfs}
+            Method: POST
+            RestApiId:
+              Ref: SharpETHApi
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          -
+            Effect: "Allow"
+            Principal:
+              Service:
+                - "lambda.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+        - "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+        - "arn:aws:iam::aws:policy/SecretsManagerReadWrite"
+
+Outputs:
+  WebEndpoint:
+    Description: "SharpShark - Blockchain App Layer for ETH"
+    Value: !Sub "https://${SharpETHApi}.execute-api.${AWS::Region}.amazonaws.com/${NetworkName}/"
+

@@ -1,0 +1,12 @@
+version = 0.1
+[testnet]
+[testnet.deploy]
+[testnet.deploy.parameters]
+stack_name = "tesnet-eth-api"
+s3_bucket = "xxx"
+s3_prefix = "tesnet-eth-api"
+region = "xxx"
+profile = "sharpshark"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+parameter_overrides = "NetworkName=\"testnet\""

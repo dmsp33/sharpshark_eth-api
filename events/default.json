@@ -1,0 +1,8 @@
+{
+    "resource":"/eth/nft/ipfs/{hashipfs}",
+    "path":"/eth/nft/ipfs/asdf1234",
+    "httpMethod": "POST",
+    "pathParameters": {
+        "hashipfs":"asdf1234"
+    }
+}
